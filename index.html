@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionale Barbiere</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+            extend: {
+                fontFamily: {
+                heading: ['"Cormorant"', 'serif'],
+                sans: ['Inter', 'sans-serif'],
+                script: ['"Dancing Script"', 'cursive'],
+                },
+                colors: {
+                    bordeaux: '#7B1E3A',
+                }
+            }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&display=swap&family=Cormorant:wght@400;700" rel="stylesheet">
+</head>
+
+<body class="bg-stone-100 font-sans">
+
+    <h1 class="text-6xl font-bold text-center py-2 font-heading tracking-wide [text-shadow:2px_2px_4px_rgba(0,0,0,0.35)]">Cut <span class="italic text-stone-500">&</span> Style</h1>
+    <div class="w-24 h-px bg-gradient-to-r from-transparent via-bordeaux to-transparent mx-auto my-2"></div>
+    <h2 class="text-2xl font-semibold text-center opacity-75 font-script tracking-widest ">Il tuo salone, il tuo stile</h2>
+
+    
+    
+    <div class="max-w-4xl p-4 mx-auto">
+
+        <!-- <div id="lista-appuntamenti"></div> -->
+
+        <!-- Form per creare un nuovo appuntamento -->
+         <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Nuovo appuntamento</h3>
+
+        <div class="bg-white p-4 border rounded-sm shadow-md mb-8 flex flex-col md:flex-row gap-4 items-center md:flex-wrap md:justify-center">
+
+            
+
+            <input type="text" class="border rounded-md p-2" id="input-nome-cliente" placeholder="Nome e Cognome">
+            <input type="text" class="border rounded-md p-2" id="input-numero-telefono" placeholder="Telefono">
+
+
+            <select id="select-servizio" class="border rounded-md p-2 hover:bg-stone-200 transition duration-200 cursor-pointer">
+                <option value="1">Servizio A</option>
+                <option value="2">Servizio B</option>
+            </select>
+        
+
+            <input type="datetime-local" id="input-giorno" class="border rounded-md p-2 hover:bg-stone-200 transition duration-200 cursor-pointer">
+            
+            <button id="btn-crea" class="border rounded-md p-2 w-full mx-auto hover:bg-bordeaux hover:text-white transition duration-200">Crea Appuntamento</button>
+        </div>
+        <!-- Selettore per visualizzare gli appuntamenti di un giorno specifico -->
+
+        <div class="bg-white rounded-md shadow-md p-4 border rounded-sm">
+            <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Agenda del giorno</h3>
+            <div class="py-2 border-b border-stone-300 flex items-center gap-2 justify-between">
+                <div>
+                    <i class="ti ti-calendar text-stone-500"></i>
+                    <label for="selettore-giorno">Visualizza Giorno</label>
+                </div>
+                
+                <input type="date" id="selettore-giorno" class="border rounded-md p-2 hover:bg-stone-200 transition duration-200 cursor-pointer" > 
+            </div>
+
+            <div id="griglia-orari" class=""></div>
+        </div>
+        
+    </div>
+    
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out">
+        <div id="modal-contenuto" class="bg-white rounded-lg shadow-lg p-6 w-3/4 md:justify-between md:flex items-center flex-col gap-4"> 
+            <p id="modal-testo"></p>
+            <button id="btn-chiudi-modal" class="mt-4 md:mt-0 border rounded-md p-2 hover:bg-bordeaux hover:text-white transition duration-200">Chiudi</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
