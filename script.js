@@ -178,6 +178,7 @@ bottone.addEventListener("click", function(){
       const telefono = (document.getElementById("input-numero-telefono").value)
       const cliente = trovaOCreaCliente(nome, telefono);
       const appuntamento = creaAppuntamento(cliente.id, servizioId, giorno);
+      apriModal(`Appuntamento creato: ${descriviAppuntamento(appuntamento)}`)
     }
   //renderAppuntamenti();
   renderGriglia();
