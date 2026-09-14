@@ -33,55 +33,113 @@
     <div class="w-24 h-px bg-gradient-to-r from-transparent via-bordeaux to-transparent mx-auto my-2"></div>
     <h2 class="text-2xl font-semibold text-center opacity-75 font-script tracking-widest ">Il tuo salone, il tuo stile</h2>
 
-    
-    
-    <div class="max-w-4xl p-4 mx-auto">
-
-        <!-- <div id="lista-appuntamenti"></div> -->
-
-        <!-- Form per creare un nuovo appuntamento -->
-         <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Nuovo appuntamento</h3>
-
-        <div class="bg-white p-4 border rounded-sm shadow-md mb-8 flex flex-col md:flex-row gap-4 items-center md:flex-wrap md:justify-center">
-
-            
-
-            <input type="text" class="border rounded-md p-2" id="input-nome-cliente" placeholder="Nome e Cognome">
-            <input type="text" class="border rounded-md p-2" id="input-numero-telefono" placeholder="Telefono">
-
-
-            <select id="select-servizio" class="border rounded-md p-2 hover:bg-stone-200 transition duration-200 cursor-pointer">
-                <option value="1">Servizio A</option>
-                <option value="2">Servizio B</option>
-            </select>
-        
-
-            <input type="datetime-local" id="input-giorno" class="border rounded-md p-2 hover:bg-stone-200 transition duration-200 cursor-pointer">
-            
-            <button id="btn-crea" class="border rounded-md p-2 w-full mx-auto hover:bg-bordeaux hover:text-white transition duration-200">Crea Appuntamento</button>
-        </div>
-        <!-- Selettore per visualizzare gli appuntamenti di un giorno specifico -->
-
-        <div class="bg-white rounded-md shadow-md p-4 border rounded-sm">
-            <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Agenda del giorno</h3>
-            <div class="py-2 border-b border-stone-300 flex items-center gap-2 justify-between">
-                <div>
-                    <i class="ti ti-calendar text-stone-500"></i>
-                    <label for="selettore-giorno">Visualizza Giorno</label>
-                </div>
-                
-                <input type="date" id="selettore-giorno" class="border rounded-md p-2 hover:bg-stone-200 transition duration-200 cursor-pointer" > 
-            </div>
-
-            <div id="griglia-orari" class=""></div>
-        </div>
+    <!-- Fascia che mostra il prossimo appuntamento-->
+    <div id="prossimo-appuntamento" class="bg-bordeaux/10 border border-bordeaux/30 rounded-md  p-4 mb-6 flex items-center gap-3 flex font-bold justify-center mt-4">
         
     </div>
+
+    <!--<div id="contatore-clienti" class="flex justify-center p-4">
+
+    </div>-->
+
     
+    
+    <div class="max-w-[90rem] p-4 mx-auto">
+
+        <div class="flex gap-8">
+
+        
+
+            <div class="w-1/4">
+                <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Rubrica Clienti</h3>
+                <div id="rubrica-clienti" class="bg-white rounded-md shadow-md p-4 border rounded-sm">
+                </div>
+
+            </div>
+
+            <div class="flex-1">
+                <!-- <div id="lista-appuntamenti"></div> -->
+
+            
+                <!-- Form per creare un nuovo appuntamento -->
+                <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Nuovo appuntamento</h3>
+
+                <div class="bg-white p-4 border rounded-sm shadow-md mb-8 flex flex-col md:flex-row gap-4 items-center md:flex-wrap md:justify-center">
+
+                
+                    <!-- Input per il nome del cliente -->
+                    <div class="flex items-center gap-2 border rounded-md p-2">
+                        <i class="ti ti-user text-stone-500"></i>
+                        <input type="text" class="outline-none flex-1" id="input-nome-cliente" placeholder="Nome e Cognome">
+                    </div>
+                    
+                    <!-- Input per il numero di telefono del cliente -->
+                    <div class="flex items-center gap-2 border rounded-md p-2">
+                        <i class="ti ti-phone text-stone-500"></i>
+                        <input type="text" class="outline-none flex-1" id="input-numero-telefono" placeholder="Telefono">
+                    </div>
+                    
+
+                    <!-- Selettore per il servizio -->
+
+                    <div class="flex items-center gap-2 border rounded-md p-2">
+                        <i class="ti ti-scissors text-stone-500"></i>
+                        <select id="select-servizio" class="outline-none flex-1 hover:bg-stone-200 transition duration-200 cursor-pointer">
+                            
+                        </select>
+                    </div>
+                    
+                
+                    <!-- Input per la data e l'ora dell'appuntamento -->
+                    <div class="flex items-center gap-2 border rounded-md p-2">
+                        <i class="ti ti-clock text-stone-500"></i>
+                        <input type="datetime-local" id="input-giorno" class="outline-none flex-1 hover:bg-stone-200 transition duration-200 cursor-pointer">
+                    </div>
+                    
+                    
+                    <!-- Bottone per creare l'appuntamento -->
+                    <button id="btn-crea" class="border rounded-md p-2 w-full mx-auto hover:bg-bordeaux hover:text-white transition duration-200">Crea Appuntamento</button>
+                </div>
+
+                <!-- Selettore per visualizzare gli appuntamenti di un giorno specifico -->
+
+                <div class="bg-white rounded-md shadow-md p-4 border rounded-sm">
+                    <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Agenda del giorno</h3>
+                    <div class="py-2 border-b border-stone-300 flex items-center gap-2 justify-between">
+                        <div>
+                            <i class="ti ti-calendar text-stone-500"></i>
+                            <label for="selettore-giorno">Visualizza Giorno</label>
+                        </div>
+                        
+                        <input type="date" id="selettore-giorno" class="border rounded-md p-2 hover:bg-stone-200 transition duration-200 cursor-pointer" > 
+                    </div>
+
+                    <div id="griglia-orari" class=""></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+        
+    <!-- Modal per visualizzare i dettagli dell'appuntamento -->
     <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out">
-        <div id="modal-contenuto" class="bg-white rounded-lg shadow-lg p-6 w-3/4 md:justify-between md:flex items-center flex-col gap-4"> 
+
+        <div id="modal-contenuto" class="bg-white rounded-lg shadow-lg p-6 max-w-sm md:justify-between md:flex items-center flex-col gap-4">
+
             <p id="modal-testo"></p>
             <button id="btn-chiudi-modal" class="mt-4 md:mt-0 border rounded-md p-2 hover:bg-bordeaux hover:text-white transition duration-200">Chiudi</button>
+            <button id="btn-elimina-modal" class="mt-4 md:mt-0 border rounded-md p-2 bg-bordeaux text-white hover:bg-bordeaux/90 hidden">Elimina</button>
+
+        </div>
+    </div>
+
+    <div id="modal-nuovo-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out">
+        <div id="modal-nuovo-contenuto" class="bg-white rounded-lg shadow-lg p-6 max-w-sm flex flex-col items-center gap-4">
+            <p id="modal-nuovo-nome" class="font-semibold"></p>
+            <select id="modal-nuovo-servizio" class="border rounded-md p-2 w-full"></select>
+            <input type="datetime-local" id="modal-nuovo-giorno" class="border rounded-md p-2 w-full">
+            <button id="btn-crea-nuovo" class="border rounded-md p-2 w-full bg-bordeaux text-white hover:bg-bordeaux/90 transition duration-200">Crea Appuntamento</button>
+            <button id="btn-chiudi-modal-nuovo" class="border rounded-md p-2 w-full hover:bg-stone-100 transition duration-200">Chiudi</button>
         </div>
     </div>
 

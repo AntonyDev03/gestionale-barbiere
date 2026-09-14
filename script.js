@@ -9,16 +9,37 @@ const clienti = [
 const servizi = [
   {
     id: 1,
-    nome: "Servizio A",
-    prezzo: 100,
+    nome: "Taglio",
+    prezzo: 10,
     durata: 30,
   },
 
   {
     id: 2,
-    nome: "Servizio B",
-    prezzo: 150,
-    durata: 45,
+    nome: "Barba",
+    prezzo: 8,
+    durata: 15,
+  },
+
+  {
+    id: 3,
+    nome: "Tinta",
+    prezzo: 50,
+    durata: 60,
+  },
+
+  {
+    id: 4,
+    nome: "Shampoo",
+    prezzo: 5,
+    durata: 5,
+  },
+
+  {
+    id: 5,
+    nome: "Piega",
+    prezzo: 30,
+    durata: 120,
   }
 ];
 
@@ -26,6 +47,20 @@ const servizi = [
 const appuntamenti = [
 
 ];
+
+
+const DURATA_SLOT_MINUTI = 15;
+
+
+
+
+
+
+
+
+
+
+
 
 /* Questa funzione trova un cliente per ID */
 function trovaClientePerId(id) {
@@ -63,6 +98,7 @@ function creaAppuntamento(clienteId, servizioId, giorno) {
         giorno: giorno,
     };
     appuntamenti.push(nuovoAppuntamento);
+    salvaDati();
     console.log(`Appuntamento creato: ${descriviAppuntamento(nuovoAppuntamento)}`);
     return nuovoAppuntamento;
 }
@@ -73,8 +109,8 @@ function descriviAppuntamento(appuntamento) {
     const cliente = trovaClientePerId(appuntamento.clienteId);
     const servizio = trovaServizioPerId(appuntamento.servizioId);
 
-        return `Appuntamento per ${cliente.nome}: (${cliente.telefono}), ${servizio.nome} - ${appuntamento.giorno}`;
-    }
+        return `<p>Appuntamento per: <span class="font-semibold text-bordeaux">${cliente.nome}</span></p><p>Telefono: ${cliente.telefono}</p><p>Servizio: ${servizio.nome} - €${servizio.prezzo}</p><p>Giorno e Orario: ${appuntamento.giorno}</p>`;
+}
 
 
 /* Questa funzione verifica se esiste un conflitto di orario con un appuntamento esistente */
@@ -156,7 +192,9 @@ function trovaOCreaCliente (nome, telefono) {
         telefono: telefono
       }
       clienti.push(nuovoCliente)
+      salvaDati();
       return nuovoCliente
+      
     }
   }
 
@@ -179,6 +217,8 @@ bottone.addEventListener("click", function(){
       const cliente = trovaOCreaCliente(nome, telefono);
       const appuntamento = creaAppuntamento(cliente.id, servizioId, giorno);
       apriModal(`Appuntamento creato: ${descriviAppuntamento(appuntamento)}`)
+      renderProssimoAppuntamento();
+      //contatoreClienti();
     }
   //renderAppuntamenti();
   renderGriglia();
@@ -187,7 +227,7 @@ bottone.addEventListener("click", function(){
 /* Questa funzione genera gli slot orari dalle 9:00 alle 20:00 con intervalli di 30 minuti */
 function generaSlotOrari() {
   const slot = []
-  for (let minuti = 540; minuti < 1200; minuti += 30) {
+  for (let minuti = 540; minuti < 1200; minuti += DURATA_SLOT_MINUTI) {
     const ore = Math.floor(minuti/60)
     const min = minuti % 60
     slot.push(`${String(ore).padStart(2, "0")}:${String(min).padStart(2, "0")}`)
@@ -200,7 +240,7 @@ function generaSlotOrari() {
 /* Questa funzione verifica se uno slot è occupato da un appuntamento esistente */
 function slotOccupato(giorno, orario) {
   const inizioSlot = new Date(`${giorno}T${orario}`).getTime();
-  const fineSlot = inizioSlot + 30 * 60000;
+  const fineSlot = inizioSlot + DURATA_SLOT_MINUTI * 60000;
   const nIntervallo = appuntamenti.some(function(appuntamento) {
     const intervalloAppEs = calcolaIntervallo(appuntamento)
     return ceConflitto(inizioSlot, fineSlot, intervalloAppEs.inizio, intervalloAppEs.fine);
@@ -237,6 +277,10 @@ else {
   giornoSelezionato = new Date().toISOString().split("T")[0]
 }
 
+caricaDati();
+
+let appuntamentoAperto = null;
+let clienteSelezionato = null
 /* Questa funzione renderizza la griglia degli orari per il giorno selezionato */
 function renderGriglia() {
   const grigliaOrari = document.getElementById("griglia-orari")
@@ -253,7 +297,7 @@ function renderGriglia() {
     divGriglia.appendChild(divContenuto)
 
       if (appTrovato) {
-          divContenuto.textContent = `Cliente: ${trovaClientePerId(appTrovato.clienteId).nome}, Servizio: ${trovaServizioPerId(appTrovato.servizioId).nome}`
+          divContenuto.innerHTML = `Cliente: ${trovaClientePerId(appTrovato.clienteId).nome}, Servizio: ${trovaServizioPerId(appTrovato.servizioId).nome}`
         }
         else {
           divContenuto.textContent = "Slot libero!"
@@ -263,10 +307,12 @@ function renderGriglia() {
     divGriglia.addEventListener("click", function(){
 
       if (appTrovato) {
+        appuntamentoAperto = appTrovato
         apriModal(descriviAppuntamento(appTrovato))
       }
       else {
-        apriModal("Slot libero!")
+        appuntamentoAperto = null;
+        apriModal("Slot libero!")        
       }
     })
 
@@ -285,7 +331,7 @@ function renderGriglia() {
 /* Questa funzione trova un appuntamento per giorno e orario */
 function trovaAppuntamentoAllo(giorno, orario) {
   const inizioApp = new Date(`${giorno}T${orario}`).getTime();
-  const fineApp = inizioApp + 30 * 60000;
+  const fineApp = inizioApp + DURATA_SLOT_MINUTI * 60000;
   const appTrovato = appuntamenti.find(function(appuntamento) {
     const intervalloNuovo = calcolaIntervallo(appuntamento)
     return ceConflitto(inizioApp, fineApp, intervalloNuovo.inizio, intervalloNuovo.fine);
@@ -305,10 +351,28 @@ renderGriglia();
 const modalOverlay = document.getElementById("modal-overlay")
 const modalContenuto = document.getElementById("modal-contenuto")
 
+const btnEliminaModal = document.getElementById("btn-elimina-modal")
+btnEliminaModal.addEventListener("click", function() {
+  if (appuntamentoAperto) {
+    cancellaAppuntamento(appuntamentoAperto.id)
+    btnEliminaModal.classList.add("hidden")
+    chiudiModal()
+    
+  }
+  
+})
+
 function apriModal(testo) {
   const modalTesto = document.getElementById("modal-testo")
-  modalTesto.textContent = testo
   modalOverlay.classList.remove("opacity-0", "pointer-events-none")
+  if (appuntamentoAperto) {
+    btnEliminaModal.classList.remove("hidden")
+    modalTesto.innerHTML = `<div class="flex items-start gap-2 text-left"><i class="ti ti-user text-stone-500 mt-1"></i><div class="space-y-1">${testo}</div></div>`;
+  }
+  else {
+    btnEliminaModal.classList.add("hidden")
+    modalTesto.innerHTML = testo;
+  }
 }
 
 function chiudiModal() {
@@ -320,4 +384,163 @@ btnChiudiModal.addEventListener("click", function(){
   chiudiModal()
 })
 
+function cancellaAppuntamento(id) {
+  const index = appuntamenti.findIndex(function(appuntamento) {
+    return appuntamento.id === id
+  })
+  if (index !== -1) {
+    appuntamenti.splice(index, 1)
+    salvaDati();
+  }
+  renderGriglia();
+  renderProssimoAppuntamento();
+}
+
+function trovaProssimoAppuntamento() {
+  const oggi = new Date().getTime();
+  const futuri = appuntamenti.filter(function(appuntamento) {
+   return calcolaIntervallo(appuntamento).inizio > oggi
+  })
+  futuri.sort(function(a, b) {
+    return calcolaIntervallo(a).inizio - calcolaIntervallo(b).inizio
+  })
+  return futuri[0]
+}
+
+
+
+function renderProssimoAppuntamento() {
+  const contenitore = document.getElementById("prossimo-appuntamento")
+  const prossimo = trovaProssimoAppuntamento()
+
+  if (prossimo) {
+    const orario = prossimo.giorno.split("T")[1]
+    const cliente = trovaClientePerId(prossimo.clienteId)
+    const servizio = trovaServizioPerId(prossimo.servizioId)
+    contenitore.innerHTML = `<i class="ti ti-clock text-bordeaux"></i> Prossimo: ${orario} — ${cliente.nome} (${servizio.nome})`
+  }
+  else {
+    contenitore.innerHTML = `<i class="ti ti-calendar-off text-stone-400"></i> Nessun appuntamento in programma`
+  }
+}
+
+/*function contatoreClienti() {
+  let contatore = document.getElementById("contatore-clienti")
+  let numeroClienti = clienti.length
+  contatore.innerHTML = numeroClienti
+}
+
+contatoreClienti();*/
+
+function salvaDati() {
+  localStorage.setItem("clienti", JSON.stringify(clienti))
+  localStorage.setItem("appuntamenti", JSON.stringify(appuntamenti))
+}
+
+function caricaDati() {
+
+  try {
+      const clientiSalvati = JSON.parse(localStorage.getItem("clienti"))
+      clienti.splice(0, clienti.length)
+      clientiSalvati.forEach(function(cliente) {
+      clienti.push(cliente)
+    })
+
+      const appSalvati = JSON.parse(localStorage.getItem("appuntamenti"))
+      appuntamenti.splice(0, appuntamenti.length)
+      appSalvati.forEach(function(appuntamento) {
+        appuntamenti.push(appuntamento)
+    })
+  }
+  catch {
+    console.log("Nessun dato salvato trovato, si parte da zero.")
+  }
+  
+}
+
+function renderSelectServizi(idSelect) {
+  const selectServizio = document.getElementById(idSelect)
+  servizi.forEach(function(servizio) {
+    const opzione = document.createElement("option")
+    opzione.value = servizio.id
+    opzione.textContent = `${servizio.nome}: €${servizio.prezzo}`
+    selectServizio.appendChild(opzione)
+  })
+}
+
+function renderRubrica() {
+  const rubricaClienti = document.getElementById("rubrica-clienti")
+  rubricaClienti.innerHTML = ""
+  clienti.forEach(function(cliente) {
+    const divCliente = document.createElement("div")
+    divCliente.innerHTML = `
+      <div class="flex items-center gap-2">
+        <i class="ti ti-user text-stone-500"></i>
+        <div>
+          <div class="font-medium">${cliente.nome}</div>
+          <div class="text-xs text-stone-500"><i class="ti ti-phone"></i> ${cliente.telefono}</div>
+        </div>
+      </div>
+    `
+    divCliente.className = "flex justify-between items-center py-2 border-b border-stone-200"
+    rubricaClienti.appendChild(divCliente)
+
+    const btnApriContatto = document.createElement("button")
+    btnApriContatto.innerHTML = `<i class="ti ti-calendar-plus"></i>`
+    btnApriContatto.classList.add("border", "p-2", "rounded-md", "hover:bg-stone-500", "transition", "duration-200")
+    divCliente.appendChild(btnApriContatto)
+    btnApriContatto.addEventListener("click", function(){
+      clienteSelezionato = cliente
+      apriNuovoModal();
+    })
+  })
+}
+
+function apriNuovoModal() {
+  const mNuovoNome = document.getElementById("modal-nuovo-nome")
+  const mNuovoOverlay = document.getElementById("modal-nuovo-overlay")
+  mNuovoNome.innerHTML = `Nuovo Appuntamento per: ${clienteSelezionato.nome}`
+  mNuovoOverlay.classList.remove("opacity-0", "pointer-events-none")
+}
+
+const btnCreaNuovo = document.getElementById("btn-crea-nuovo")
+btnCreaNuovo.addEventListener("click", function() {
+  const giorno = document.getElementById("modal-nuovo-giorno").value
+  const servizioId = Number(document.getElementById("modal-nuovo-servizio").value)
+  if (esisteConflitto({servizioId, giorno})) {
+  apriModal("Errore: Conflitto di orario")
+  return null
+}
+else {
+  
+  const appModalNuovo = creaAppuntamento(clienteSelezionato.id, servizioId, giorno)
+  
+  apriModal(`Appuntamento creato: ${descriviAppuntamento(appModalNuovo)}`)
+  renderGriglia();
+  renderProssimoAppuntamento();
+  const mNuovoOverlay = document.getElementById("modal-nuovo-overlay")
+  mNuovoOverlay.addEventListener("click", function() {})
+  mNuovoOverlay.classList.add("opacity-0", "pointer-events-none")
+}
+})
+
+
+
+
+
+
+
+
+const btnChiudiModalNuovo = document.getElementById("btn-chiudi-modal-nuovo")
+btnChiudiModalNuovo.addEventListener("click", function(){
+  const mNuovoOverlay = document.getElementById("modal-nuovo-overlay")
+  mNuovoOverlay.classList.add("opacity-0", "pointer-events-none")
+})
+
+
+
+renderRubrica();
+renderSelectServizi("select-servizio");
+renderSelectServizi("modal-nuovo-servizio")
+renderProssimoAppuntamento();
 renderGriglia();
