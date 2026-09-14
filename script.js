@@ -224,6 +224,7 @@ bottone.addEventListener("click", function(){
   //renderAppuntamenti();
   renderGriglia();
   renderAppuntamentiOggi();
+  renderRubrica();
 });
 
 
