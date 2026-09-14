@@ -218,11 +218,22 @@ bottone.addEventListener("click", function(){
       const appuntamento = creaAppuntamento(cliente.id, servizioId, giorno);
       apriModal(`Appuntamento creato: ${descriviAppuntamento(appuntamento)}`)
       renderProssimoAppuntamento();
+      
       //contatoreClienti();
     }
   //renderAppuntamenti();
   renderGriglia();
+  renderAppuntamentiOggi();
 });
+
+
+function oggiLocale() {
+  const d = new Date();
+  const anno = d.getFullYear();
+  const mese = String(d.getMonth() + 1).padStart(2, "0");
+  const giorno = String(d.getDate()).padStart(2, "0");
+  return `${anno}-${mese}-${giorno}`;
+}
 
 /* Questa funzione genera gli slot orari dalle 9:00 alle 20:00 con intervalli di 30 minuti */
 function generaSlotOrari() {
@@ -274,7 +285,7 @@ if (appuntamenti.length > 0) {
   giornoSelezionato = appuntamenti[0].giorno.split("T")[0]
 }
 else {
-  giornoSelezionato = new Date().toISOString().split("T")[0]
+  giornoSelezionato = oggiLocale()
 }
 
 caricaDati();
@@ -394,6 +405,7 @@ function cancellaAppuntamento(id) {
   }
   renderGriglia();
   renderProssimoAppuntamento();
+  renderAppuntamentiOggi();
 }
 
 function trovaProssimoAppuntamento() {
@@ -522,13 +534,8 @@ else {
   mNuovoOverlay.addEventListener("click", function() {})
   mNuovoOverlay.classList.add("opacity-0", "pointer-events-none")
 }
+renderAppuntamentiOggi();
 })
-
-
-
-
-
-
 
 
 const btnChiudiModalNuovo = document.getElementById("btn-chiudi-modal-nuovo")
@@ -538,7 +545,40 @@ btnChiudiModalNuovo.addEventListener("click", function(){
 })
 
 
+function renderAppuntamentiOggi() {
+  const oggi = oggiLocale()
+  const appuntamentiOggi = appuntamenti.filter(function(appuntamento) {
+    return appuntamento.giorno.split("T")[0] === oggi
+  })
+  const appGrigliaOggi = document.getElementById("appuntamenti-oggi")
+  appGrigliaOggi.innerHTML = ""
+  appuntamentiOggi.forEach(function(appuntamento) {
+    const clienteTrovato = trovaClientePerId(appuntamento.clienteId)
+    const divApp = document.createElement("div")
+    divApp.className = "flex justify-between items-center py-2 border-b border-stone-200"
+    divApp.innerHTML = `
+      <div class="flex items-center gap-2">
+        <i class="ti ti-user text-stone-500"></i>
+        <div>
+          <div class="font-medium">${clienteTrovato.nome}</div>
+          <div class="text-xs text-stone-500"><i class="ti ti-phone"></i> ${appuntamento.giorno.split("T")[1]}</div>
+        </div>
+      </div>
+    `
+    appGrigliaOggi.appendChild(divApp)
+    const btnElimina = document.createElement("button")
+    btnElimina.innerHTML = `<i class="ti ti-trash"></i>`
+    btnElimina.classList.add("border", "p-2", "rounded-md", "hover:bg-red-500", "transition", "duration-200")
+    btnElimina.addEventListener("click", function() {
+      cancellaAppuntamento(appuntamento.id);
+      
+      
+    })
+    divApp.appendChild(btnElimina);
+  })
+}
 
+renderAppuntamentiOggi()
 renderRubrica();
 renderSelectServizi("select-servizio");
 renderSelectServizi("modal-nuovo-servizio")
