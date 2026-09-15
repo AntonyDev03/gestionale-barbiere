@@ -484,6 +484,9 @@ function renderSelectServizi(idSelect) {
 function renderRubrica() {
   const rubricaClienti = document.getElementById("rubrica-clienti")
   rubricaClienti.innerHTML = ""
+  clienti.sort(function(a, b) {
+    return a.nome.localeCompare(b.nome)
+  })
   clienti.forEach(function(cliente) {
     const divCliente = document.createElement("div")
     divCliente.innerHTML = `
