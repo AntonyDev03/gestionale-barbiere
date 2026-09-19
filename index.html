@@ -27,14 +27,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&display=swap&family=Cormorant:wght@400;700" rel="stylesheet">
 </head>
 
-<body class="bg-stone-100 font-sans">
+<body class="bg-stone-100 font-sans bg-fixed bg-cover bg-center [background-image:url('img/loto2.jfif')]">
 
     <h1 class="text-6xl font-bold text-center py-2 font-heading tracking-wide [text-shadow:2px_2px_4px_rgba(0,0,0,0.35)]">Cut <span class="italic text-stone-500">&</span> Style</h1>
     <div class="w-24 h-px bg-gradient-to-r from-transparent via-bordeaux to-transparent mx-auto my-2"></div>
     <h2 class="text-2xl font-semibold text-center opacity-75 font-script tracking-widest ">Il tuo salone, il tuo stile</h2>
 
     <!-- Fascia che mostra il prossimo appuntamento-->
-    <div id="prossimo-appuntamento" class="bg-bordeaux/10 border border-bordeaux/30 rounded-md  p-4 mb-6 flex items-center gap-3 flex font-bold justify-center mt-4">
+    <div id="prossimo-appuntamento" class="bg-bordeaux/10  bg-gradient-to-r from-white via-bordeaux/30 to-white rounded-md  p-4 mb-6 flex items-center gap-3 flex font-bold justify-center mt-4 mr-4 ml-4">
         
     </div>
 
@@ -46,12 +46,20 @@
     
     <div class="max-w-[90rem] p-4 mx-auto">
 
-        <div class="flex gap-8">
+        <div class="flex gap-8 flex-col md:flex-row">
 
         
 
-            <div class="w-1/4">
+            <div class="w-full md:w-1/4">
+                
+
                 <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Rubrica Clienti</h3>
+
+                <div class="flex items-center border-b-2 shadow-sm gap-2 p-2 mb-2">
+                    <i class="ti ti-search text-stone-500"></i>
+                    <input type="text" id="input-ricerca-rubrica" class="outline-none flex-1" placeholder="Cerca cliente...">
+                </div>
+
                 <div id="rubrica-clienti" class="bg-white rounded-md shadow-md p-4 border rounded-sm">
                 </div>
 
@@ -82,16 +90,17 @@
 
                     <!-- Selettore per il servizio -->
 
-                    <div class="flex items-center gap-2 border rounded-md p-2">
-                        <i class="ti ti-scissors text-stone-500"></i>
-                        <select id="select-servizio" class="outline-none flex-1 hover:bg-stone-200 transition duration-200 cursor-pointer">
-                            
-                        </select>
+                    <div class="border rounded-md p-2 w-full ">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="ti ti-scissors text-stone-500"></i>
+                            <span class="text-sm text-stone-500">Servizi</span>
+                        </div>
+                        <div id="checkbox-servizi" class="flex flex-wrap items-center gap-4 mb-4 justify-center font-bold"></div>
                     </div>
                     
                 
                     <!-- Input per la data e l'ora dell'appuntamento -->
-                    <div class="flex items-center gap-2 border rounded-md p-2">
+                    <div class="flex items-center gap-2 border rounded-md p-2 mb-4">
                         <i class="ti ti-clock text-stone-500"></i>
                         <input type="datetime-local" id="input-giorno" class="outline-none flex-1 hover:bg-stone-200 transition duration-200 cursor-pointer">
                     </div>
@@ -118,7 +127,7 @@
                 </div>
             </div>
 
-            <div class="w-1/4">
+            <div class="w-full md:w-1/4">
                 <h3 class="text-sm uppercase tracking-wide text-stone-500 font-semibold mb-2">Appuntamenti di Oggi</h3>
                 <div id="appuntamenti-oggi" class="bg-white rounded-md shadow-md p-4 border rounded-sm">
                 </div>
@@ -142,7 +151,14 @@
     <div id="modal-nuovo-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out">
         <div id="modal-nuovo-contenuto" class="bg-white rounded-lg shadow-lg p-6 max-w-sm flex flex-col items-center gap-4">
             <p id="modal-nuovo-nome" class="font-semibold"></p>
-            <select id="modal-nuovo-servizio" class="border rounded-md p-2 w-full"></select>
+            <div class="border rounded-md p-2 w-full">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="ti ti-scissors text-stone-500"></i>
+                    <span class="text-sm text-stone-500">Servizi</span>
+                </div>
+                <div id="checkbox-servizi-modal" class="flex flex-col gap-1">
+                </div>
+            </div>
             <input type="datetime-local" id="modal-nuovo-giorno" class="border rounded-md p-2 w-full">
             <button id="btn-crea-nuovo" class="border rounded-md p-2 w-full bg-bordeaux text-white hover:bg-bordeaux/90 transition duration-200">Crea Appuntamento</button>
             <button id="btn-chiudi-modal-nuovo" class="border rounded-md p-2 w-full hover:bg-stone-100 transition duration-200">Chiudi</button>

@@ -86,15 +86,15 @@ function generaIdUnico(array) {
 
 
 /* Questa funzione crea un nuovo appuntamento e lo aggiunge all'array degli appuntamenti */
-function creaAppuntamento(clienteId, servizioId, giorno) {
-  if (esisteConflitto({ clienteId, servizioId, giorno })) {
+function creaAppuntamento(clienteId, servizioIds, giorno) {
+  if (esisteConflitto({ clienteId, servizioIds, giorno })) {
     console.log("Errore: Conflitto di orario con un appuntamento esistente.");
     return null;
   }
     const nuovoAppuntamento = {
         id: generaIdUnico(appuntamenti),
         clienteId: clienteId,
-        servizioId: servizioId,
+        servizioIds: servizioIds,
         giorno: giorno,
     };
     appuntamenti.push(nuovoAppuntamento);
@@ -106,10 +106,22 @@ function creaAppuntamento(clienteId, servizioId, giorno) {
 
 /* Questa funzione descrive un appuntamento in modo leggibile */
 function descriviAppuntamento(appuntamento) {
-    const cliente = trovaClientePerId(appuntamento.clienteId);
-    const servizio = trovaServizioPerId(appuntamento.servizioId);
+  const nomiServizi = appuntamento.servizioIds.map(function(servizioId) {
+    const nomeServizio = trovaServizioPerId(servizioId)
+    return nomeServizio.nome
 
-        return `<p>Appuntamento per: <span class="font-semibold text-bordeaux">${cliente.nome}</span></p><p>Telefono: ${cliente.telefono}</p><p>Servizio: ${servizio.nome} - €${servizio.prezzo}</p><p>Giorno e Orario: ${appuntamento.giorno}</p>`;
+  })
+
+  const listaServizi = nomiServizi.join(", ")
+  let prezzoTotale = 0
+  appuntamento.servizioIds.forEach(function(servizioId) {
+    const prezzoSingolo = trovaServizioPerId(servizioId)
+    prezzoTotale += prezzoSingolo.prezzo
+  })
+
+    const cliente = trovaClientePerId(appuntamento.clienteId);
+
+        return `<p>Appuntamento per: <span class="font-semibold text-bordeaux">${cliente.nome}</span></p><p>Telefono: ${cliente.telefono}</p><p>Servizio: ${listaServizi} - €${prezzoTotale}</p><p>Giorno e Orario: ${appuntamento.giorno}</p>`;
 }
 
 
@@ -125,11 +137,17 @@ function ceConflitto(inizio1, fine1, inizio2, fine2) {
 
 /* Questa funzione calcola l'intervallo di tempo di un appuntamento in millisecondi */
 function calcolaIntervallo(appuntamento) {
-    const servizio = trovaServizioPerId(appuntamento.servizioId);
+    let durataTotale = 0
+    appuntamento.servizioIds.forEach(function(servizioId) {
+        const servizioN = trovaServizioPerId(servizioId)
+        durataTotale += servizioN.durata 
+    })
+
     const inizio = new Date(appuntamento.giorno).getTime();
-    const fine = inizio + servizio.durata * 60000; // Converti minuti in millisecondi
+    const fine = inizio + durataTotale * 60000;
     return { inizio, fine };
 }
+
 
 
 /* Questa funzione verifica se esiste un conflitto di orario con un appuntamento esistente */
@@ -202,9 +220,12 @@ function trovaOCreaCliente (nome, telefono) {
 const bottone = document.getElementById("btn-crea")
 bottone.addEventListener("click", function(){
   const giorno = document.getElementById("input-giorno").value
-  const servizioId = Number(document.getElementById("select-servizio").value)
+  const checkboxSelezionate = document.querySelectorAll("#checkbox-servizi input[type='checkbox']:checked")
+  const servizioIds = Array.from(checkboxSelezionate).map(function(checkbox) {
+  return Number(checkbox.value)
+})
   
-    if (esisteConflitto({servizioId, giorno})) {
+    if (esisteConflitto({servizioIds, giorno})) {
       apriModal("Errore: Conflitto di orario!")
       console.log("Errore: Conflitto di orario!")
       return null
@@ -215,7 +236,7 @@ bottone.addEventListener("click", function(){
       const nome = (document.getElementById("input-nome-cliente").value)
       const telefono = (document.getElementById("input-numero-telefono").value)
       const cliente = trovaOCreaCliente(nome, telefono);
-      const appuntamento = creaAppuntamento(cliente.id, servizioId, giorno);
+      const appuntamento = creaAppuntamento(cliente.id, servizioIds, giorno);
       apriModal(`Appuntamento creato: ${descriviAppuntamento(appuntamento)}`)
       renderProssimoAppuntamento();
       
@@ -224,7 +245,7 @@ bottone.addEventListener("click", function(){
   //renderAppuntamenti();
   renderGriglia();
   renderAppuntamentiOggi();
-  renderRubrica();
+  renderRubrica(clienti);
 });
 
 
@@ -307,9 +328,14 @@ function renderGriglia() {
     divContenuto.textContent = ""
     divGriglia.appendChild(divOrario)
     divGriglia.appendChild(divContenuto)
+    divContenuto.classList = "leading-relaxed gap-2" 
 
       if (appTrovato) {
-          divContenuto.innerHTML = `Cliente: ${trovaClientePerId(appTrovato.clienteId).nome}, Servizio: ${trovaServizioPerId(appTrovato.servizioId).nome}`
+        const nomiServizi = appTrovato.servizioIds.map(function(servizioId) {
+          const nomeServizio = trovaServizioPerId(servizioId)
+          return nomeServizio.nome
+        })
+          divContenuto.innerHTML = `Cliente: ${trovaClientePerId(appTrovato.clienteId).nome}, Servizio: ${nomiServizi.join(", ")}`
         }
         else {
           divContenuto.textContent = "Slot libero!"
@@ -330,11 +356,11 @@ function renderGriglia() {
 
     if (appTrovato) {
       divGriglia.className = "p-2 m-1 border rounded bg-bordeaux/30 hover:bg-bordeaux/70 hover:text-white transition duration-200 cursor-pointer flex justify-between"
-      divOrario.className = "font-bold text-lg"
+      divOrario.className = "font-bold text-lg w-16 flex-shrink-0"
     }
     else {
       divGriglia.className = "p-2 m-1 border rounded bg-emerald-200 hover:bg-emerald-500 transition duration-200 cursor-pointer flex justify-between"
-      divOrario.className = "font-bold text-lg"
+      divOrario.className = "font-bold text-lg w-16 flex-shrink-0"
     }
     grigliaOrari.appendChild(divGriglia)
   }
@@ -429,8 +455,13 @@ function renderProssimoAppuntamento() {
   if (prossimo) {
     const orario = prossimo.giorno.split("T")[1]
     const cliente = trovaClientePerId(prossimo.clienteId)
-    const servizio = trovaServizioPerId(prossimo.servizioId)
-    contenitore.innerHTML = `<i class="ti ti-clock text-bordeaux"></i> Prossimo: ${orario} — ${cliente.nome} (${servizio.nome})`
+    
+    const nomiServizi = prossimo.servizioIds.map(function(servizioId) {
+      const nomeServizio = trovaServizioPerId(servizioId)
+      return nomeServizio.nome
+    })
+
+    contenitore.innerHTML = `<i class="ti ti-clock text-bordeaux"></i> Prossimo: ${orario} — ${cliente.nome} (${nomiServizi.join(", ")})`
   }
   else {
     contenitore.innerHTML = `<i class="ti ti-calendar-off text-stone-400"></i> Nessun appuntamento in programma`
@@ -481,13 +512,13 @@ function renderSelectServizi(idSelect) {
   })
 }
 
-function renderRubrica() {
+function renderRubrica(listaClienti) {
   const rubricaClienti = document.getElementById("rubrica-clienti")
   rubricaClienti.innerHTML = ""
   clienti.sort(function(a, b) {
     return a.nome.localeCompare(b.nome)
   })
-  clienti.forEach(function(cliente) {
+  listaClienti.forEach(function(cliente) {
     const divCliente = document.createElement("div")
     divCliente.innerHTML = `
       <div class="flex items-center gap-2">
@@ -582,9 +613,38 @@ function renderAppuntamentiOggi() {
   })
 }
 
+
+const inputRicerca = document.getElementById("input-ricerca-rubrica")
+inputRicerca.addEventListener("input", function() {
+  const testoCercato = inputRicerca.value
+  const risultati = clienti.filter(function(cliente) {
+    return cliente.nome.toLowerCase().includes(testoCercato.toLowerCase())
+  })
+  renderRubrica(risultati);
+})
+
+function renderCheckboxServizi (idContenitore) {
+  const contenitore = document.getElementById(idContenitore)
+  contenitore.innerHTML = ""
+  servizi.forEach(function(servizio) {
+    const divCheckbox = document.createElement("div")
+    divCheckbox.innerHTML = `<label class="flex items-center gap-2 whitespace-nowrap cursor-pointer">
+    <input type="checkbox" value="${servizio.id}" class="peer hidden">
+    <span class="w-5 h-5 rounded-full border-2 border-stone-400 peer-checked:bg-bordeaux peer-checked:border-bordeaux transition-colors duration-300"></span>
+    ${servizio.nome}: €${servizio.prezzo}
+    </label>`
+    contenitore.appendChild(divCheckbox)
+  })
+}
+
+
+
+renderCheckboxServizi("checkbox-servizi");
+renderCheckboxServizi("checkbox-servizi-modal");
 renderAppuntamentiOggi()
-renderRubrica();
-renderSelectServizi("select-servizio");
-renderSelectServizi("modal-nuovo-servizio")
+renderRubrica(clienti);
 renderProssimoAppuntamento();
 renderGriglia();
+
+
+
