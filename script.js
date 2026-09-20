@@ -28,12 +28,6 @@ const servizi = [
     durata: 60,
   },
 
-  {
-    id: 4,
-    nome: "Shampoo",
-    prezzo: 5,
-    durata: 5,
-  },
 
   {
     id: 5,
