@@ -214,10 +214,18 @@ function trovaOCreaCliente (nome, telefono) {
 const bottone = document.getElementById("btn-crea")
 bottone.addEventListener("click", function(){
   const giorno = document.getElementById("input-giorno").value
+  if (giorno === "") {
+  apriModal("Seleziona data e ora dell'appuntamento!")
+  return null
+  }
   const checkboxSelezionate = document.querySelectorAll("#checkbox-servizi input[type='checkbox']:checked")
   const servizioIds = Array.from(checkboxSelezionate).map(function(checkbox) {
-  return Number(checkbox.value)
-})
+    return Number(checkbox.value)
+  })
+  if (servizioIds.length === 0) {
+    apriModal("Seleziona almeno un servizio!")
+    return null
+  }
   
     if (esisteConflitto({servizioIds, giorno})) {
       apriModal("Errore: Conflitto di orario!")
@@ -547,14 +555,26 @@ function apriNuovoModal() {
 const btnCreaNuovo = document.getElementById("btn-crea-nuovo")
 btnCreaNuovo.addEventListener("click", function() {
   const giorno = document.getElementById("modal-nuovo-giorno").value
-  const servizioId = Number(document.getElementById("modal-nuovo-servizio").value)
-  if (esisteConflitto({servizioId, giorno})) {
+  if (giorno === "") {
+  apriModal("Seleziona data e ora dell'appuntamento!")
+  return null
+  }
+  const checkSelezionate = document.querySelectorAll("#checkbox-servizi-modal input[type='checkbox']:checked")
+  const servizioIds = Array.from(checkSelezionate).map(function(checkbox) {
+    return Number(checkbox.value)
+  })
+  if (servizioIds.length === 0) {
+    apriModal("Seleziona almeno un servizio!")
+    return null
+  }
+  
+  if (esisteConflitto({servizioIds, giorno})) {
   apriModal("Errore: Conflitto di orario")
   return null
 }
 else {
   
-  const appModalNuovo = creaAppuntamento(clienteSelezionato.id, servizioId, giorno)
+  const appModalNuovo = creaAppuntamento(clienteSelezionato.id, servizioIds, giorno)
   
   apriModal(`Appuntamento creato: ${descriviAppuntamento(appModalNuovo)}`)
   renderGriglia();
