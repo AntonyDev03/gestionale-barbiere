@@ -320,6 +320,7 @@ let clienteSelezionato = null
 function renderGriglia() {
   const grigliaOrari = document.getElementById("griglia-orari")
   grigliaOrari.innerHTML = ""
+  let ultimoAppuntamentoId = null;
   
   for (let s of generaSlotOrari()) {
     const divGriglia = document.createElement('div')
@@ -330,19 +331,32 @@ function renderGriglia() {
     divContenuto.textContent = ""
     divGriglia.appendChild(divOrario)
     divGriglia.appendChild(divContenuto)
-    divContenuto.classList = "leading-relaxed gap-2" 
+    divContenuto.className = "leading-relaxed gap-2" 
 
       if (appTrovato) {
-        const nomiServizi = appTrovato.servizioIds.map(function(servizioId) {
+        if (appTrovato.id === ultimoAppuntamentoId) {
+          divContenuto.textContent = `${trovaClientePerId(appTrovato.clienteId).nome}`
+          divContenuto.className = "text-bold"
+          const fineTimestamp = calcolaIntervallo(appTrovato).fine
+          const dataFine = new Date(fineTimestamp)
+          const oreFine = String(dataFine.getHours()).padStart(2, "0")
+          const minutiFine = String(dataFine.getMinutes()).padStart(2, "0")
+          divContenuto.textContent += ` - Fine: ${oreFine}:${minutiFine}`
+        }
+        else {
+          ultimoAppuntamentoId = appTrovato.id;
+          const nomiServizi = appTrovato.servizioIds.map(function(servizioId) {
           const nomeServizio = trovaServizioPerId(servizioId)
           return nomeServizio.nome
         })
           divContenuto.innerHTML = `Cliente: ${trovaClientePerId(appTrovato.clienteId).nome}, Servizio: ${nomiServizi.join(", ")}`
         }
-        else {
+        
+        }
+      else {
           divContenuto.textContent = "Slot libero!"
           divContenuto.className = "text-bold"
-        }
+      }
 
     divGriglia.addEventListener("click", function(){
 
